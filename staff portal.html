@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warden Portal - Hostel Accommodation</title>
+    <style>
+        :root {
+            --primary: #1E3A8A;
+            --secondary: #3B82F6;
+            --success: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --border: #E2E8F0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .stat-card h4 {
+            font-size: 0.85rem;
+            color: #64748B;
+            text-transform: uppercase;
+        }
+
+        .stat-card .count {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+            color: var(--primary);
+        }
+
+        .table-container {
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #F1F5F9;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .badge {
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-pending { background: #FEF3C7; color: #92400E; }
+        .badge-approved { background: #D1FAE5; color: #065F46; }
+        .badge-rejected { background: #FEE2E2; color: #991B1B; }
+
+        .btn-action {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.3rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-approve { background: var(--success); color: #fff; }
+        .btn-reject { background: var(--danger); color: #fff; }
+        .btn-action:hover { opacity: 0.85; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">HostelPortal &mdash; Warden Desk</a>
+        <a href="index.html" style="color: #64748B; text-decoration: none; font-size: 0.9rem;">Logout</a>
+    </header>
+
+    <div class="container">
+        <h2 style="margin-bottom: 1.5rem;">Hostel Applications & Allocations</h2>
+
+        <!-- Overview Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Total Applications</h4>
+                <div class="count" id="totalCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Pending Review</h4>
+                <div class="count" style="color: var(--warning);" id="pendingCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Approved Allocations</h4>
+                <div class="count" style="color: var(--success);" id="approvedCount">0</div>
+            </div>
+        </div>
+
+        <!-- Applications Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>App ID</th>
+                        <th>Student Details</th>
+                        <th>Hostel & Room</th>
+                        <th>Food Plan</th>
+                        <th>Emergency Contact</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="applicationTableBody">
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Loading applications...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Fetch and populate applications from server
+        async function fetchApplications() {
+            try {
+                const response = await fetch('/api/applications');
+                const applications = await response.json();
+
+                const tbody = document.getElementById('applicationTableBody');
+                tbody.innerHTML = '';
+
+                let total = applications.length;
+                let pending = 0;
+                let approved = 0;
+
+                if (applications.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No room applications found.</td></tr>';
+                    return;
+                }
+
+                applications.forEach(app => {
+                    if (app.application_status === 'Approved') approved++;
+                    if (app.application_status === 'Pending Review') pending++;
+
+                    let statusClass = 'badge-pending';
+                    if (app.application_status === 'Approved') statusClass = 'badge-approved';
+                    if (app.application_status === 'Rejected') statusClass = 'badge-rejected';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><strong>#APP-${app.application_id}</strong></td>
+                        <td>
+                            <strong>${app.full_name}</strong><br>
+                            <small style="color: #64748B;">ID: ${app.student_id}</small>
+                        </td>
+                        <td>
+                            ${app.hostel_block}<br>
+                            <small style="color: #64748B;">${app.room_type}</small>
+                        </td>
+                        <td>${app.food_plan}</td>
+                        <td>${app.emergency_contact}</td>
+                        <td><span class="badge ${statusClass}">${app.application_status}</span></td>
+                        <td>
+                            ${app.application_status === 'Pending Review' ? `
+                                <button class="btn-action btn-approve" onclick="updateStatus(${app.application_id}, 'Approved')">Approve</button>
+                                <button class="btn-action btn-reject" onclick="updateStatus(${app.application_id}, 'Rejected')">Reject</button>
+                            ` : `<span style="font-size: 0.85rem; color: #64748B;">Completed</span>`}
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                document.getElementById('totalCount').innerText = total;
+                document.getElementById('pendingCount').innerText = pending;
+                document.getElementById('approvedCount').innerText = approved;
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('applicationTableBody').innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Failed to load applications.</td></tr>';
+            }
+        }
+
+        // Update application status
+        async function updateStatus(id, newStatus) {
+            try {
+                const res = await fetch('/api/applications/status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id, status: newStatus })
+                });
+                if (res.ok) {
+                    fetchApplications();
+                } else {
+                    alert('Error updating status');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Load data on page launch
+        fetchApplications();
+    </script>
+</body>
+</html>
