@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - Hostel Portal</title>
+    <style>
+        :root {
+            --primary: #1E3A8A;
+            --secondary: #3B82F6;
+            --dark: #0F172A;
+            --light: #F8FAFC;
+            --gray: #64748B;
+            --border: #CBD5E1;
+            --danger: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Bar */
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .back-link {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        /* Form Container */
+        .container {
+            max-width: 800px;
+            margin: 2.5rem auto;
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-top: 5px solid var(--primary);
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+
+        .form-header p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            margin-top: 0.3rem;
+        }
+
+        /* Grid Layout for Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.4rem;
+            color: var(--dark);
+        }
+
+        input, select, textarea {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-group label {
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            background-color: var(--primary);
+            color: #ffffff;
+            padding: 0.85rem 2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--secondary);
+        }
+
+        .login-prompt {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .login-prompt a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-prompt a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width {
+                grid-column: span 1;
+            }
+            .container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.jsp" class="logo">HostelPortal</a>
+        <a href="index.jsp" class="back-link">&larr; Back to Home</a>
+    </header>
+
+    <div class="container">
+        <div class="form-header">
+            <h2>Student Accommodation Registration</h2>
+            <p>Fill out the required details to create your portal account and apply for room allotment.</p>
+        </div>
+
+        <form action="RegisterServlet" method="POST">
+            <div class="form-grid">
+                
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label for="fullName">Full Name *</label>
+                    <input type="text" id="fullName" name="fullName" placeholder="e.g. John Doe" required>
+                </div>
+
+                <!-- Student Roll Number / ID -->
+                <div class="form-group">
+                    <label for="studentId">Student ID / Roll No *</label>
+                    <input type="text" id="studentId" name="studentId" placeholder="e.g. 2026CS101" required>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">University Email *</label>
+                    <input type="email" id="email" name="email" placeholder="student@university.edu" required>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" placeholder="e.g. +91 9876543210" pattern="[0-9+ ]{10,15}" required>
+                </div>
+
+                <!-- Gender -->
+                <div class="form-group full-width">
+                    <label>Gender *</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="gender" value="Male" required> Male</label>
+                        <label><input type="radio" name="gender" value="Female" required> Female</label>
+                        <label><input type="radio" name="gender" value="Other" required> Other</label>
+                    </div>
+                </div>
+
+                <!-- Department / Course -->
+                <div class="form-group">
+                    <label for="department">Department / Course *</label>
+                    <select id="department" name="department" required>
+                        <option value="" disabled selected>Select Department</option>
+                        <option value="CSE">Computer Science & Engineering</option>
+                        <option value="ECE">Electronics & Communication</option>
+                        <option value="ME">Mechanical Engineering</option>
+                        <option value="IT">Information Technology</option>
+                        <option value="Civil">Civil Engineering</option>
+                        <option value="Management">Management / MBA</option>
+                    </select>
+                </div>
+
+                <!-- Year of Study -->
+                <div class="form-group">
+                    <label for="year">Year of Study *</label>
+                    <select id="year" name="year" required>
+                        <option value="" disabled selected>Select Year</option>
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+                </div>
+
+                <!-- Preferred Hostel Block -->
+                <div class="form-group">
+                    <label for="hostelBlock">Hostel Block Preference *</label>
+                    <select id="hostelBlock" name="hostelBlock" required>
+                        <option value="" disabled selected>Select Block</option>
+                        <option value="Block-A">Block A (Boys - AC)</option>
+                        <option value="Block-B">Block B (Boys - Non-AC)</option>
+                        <option value="Block-C">Block C (Girls - AC)</option>
+                        <option value="Block-D">Block D (Girls - Non-AC)</option>
+                    </select>
+                </div>
+
+                <!-- Room Type Preference -->
+                <div class="form-group">
+                    <label for="roomType">Room Sharing Type *</label>
+                    <select id="roomType" name="roomType" required>
+                        <option value="" disabled selected>Select Room Type</option>
+                        <option value="Single">Single Occupancy</option>
+                        <option value="Double">Double Sharing</option>
+                        <option value="Triple">Triple Sharing</option>
+                    </select>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Create Password *</label>
+                    <input type="password" id="password" name="password" minlength="6" placeholder="At least 6 characters" required>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password *</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" minlength="6" placeholder="Repeat password" required>
+                </div>
+
+                <!-- Permanent Address -->
+                <div class="form-group full-width">
+                    <label for="address">Permanent Address *</label>
+                    <textarea id="address" name="address" rows="3" placeholder="Enter full residential address with pin code" required></textarea>
+                </div>
+
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Registration</button>
+        </form>
+
+        <p class="login-prompt">
+            Already have an account? <a href="login.jsp">Log In here</a>
+        </p>
+    </div>
+
+</body>
+</html>
